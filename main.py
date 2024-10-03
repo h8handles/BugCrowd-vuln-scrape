@@ -12,6 +12,7 @@ def get_taxonomy_html():
     url = 'https://bugcrowd.com/vulnerability-rating-taxonomy'
 
     # Set up the WebDriver for Chrome (if ChromeDriver is in your PATH, this should work without specifying the path)
+    # refer to this link to download correct version of chromedriver: https://developer.chrome.com/docs/chromedriver/downloads
     service = Service(executable_path='chromedriver.exe')  # Replace with the path to your ChromeDriver if needed
     driver = webdriver.Chrome(service=service)
 
