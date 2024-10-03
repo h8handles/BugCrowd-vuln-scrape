@@ -36,7 +36,7 @@ def get_taxonomy_html():
 
 def list_vulns_by_priority(html_file):
     """
-    This function parses an HTML file and lists the vulnerabilities by their priorities (P1 to P4)
+    This function parses an HTML file and lists the vulnerabilities by their priorities (P1 to P5)
     by looking for 'span' elements with priority classes and 'td' elements with specific vulnerability names.
     
     :param html_file: Path to the HTML file to be parsed.
@@ -49,7 +49,8 @@ def list_vulns_by_priority(html_file):
             'P1': 'bc-badge--p1',
             'P2': 'bc-badge--p2',
             'P3': 'bc-badge--p3',
-            'P4': 'bc-badge--p4'
+            'P4': 'bc-badge--p4',
+            'P4': 'bc-badge--p5'
         }
 
         for priority, badge_class in priorities.items():
