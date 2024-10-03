@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup as bs
 from time import sleep
+import json
 
 def get_taxonomy_html():
     """
@@ -12,7 +13,6 @@ def get_taxonomy_html():
     url = 'https://bugcrowd.com/vulnerability-rating-taxonomy'
 
     # Set up the WebDriver for Chrome (if ChromeDriver is in your PATH, this should work without specifying the path)
-    # refer to this link to download correct version of chromedriver: https://developer.chrome.com/docs/chromedriver/downloads
     service = Service(executable_path='chromedriver.exe')  # Replace with the path to your ChromeDriver if needed
     driver = webdriver.Chrome(service=service)
 
@@ -34,45 +34,26 @@ def get_taxonomy_html():
     # Close the browser
     driver.quit()
 
-def list_vulns_by_priority(html_file):
-    """
-    This function parses an HTML file and lists the vulnerabilities by their priorities (P1 to P5)
-    by looking for 'span' elements with priority classes and 'td' elements with specific vulnerability names.
-    
-    :param html_file: Path to the HTML file to be parsed.
-    """
+def list_vulns_by_subcategory(html_file):
     with open(html_file, encoding='utf-8') as file:
         soup = bs(file, 'html.parser')
 
-        # Define priority levels and their corresponding badge classes
-        priorities = {
-            'P1': 'bc-badge--p1',
-            'P2': 'bc-badge--p2',
-            'P3': 'bc-badge--p3',
-            'P4': 'bc-badge--p4',
-            'P5': 'bc-badge--p5'
-        }
-        #added p5 for informational bugs
+        # Extract the JSON-like structure from the 'data-react-props' attribute
+        taxonomy_data = soup.find('div', {'data-react-class': 'VrtPublic'}).get('data-react-props')
+        taxonomy_json = json.loads(taxonomy_data)
 
-        for priority, badge_class in priorities.items():
-            # Find all span elements with the priority badge class
-            span_elements = soup.find_all('span', class_=f'bc-badge {badge_class}')
-            
-            if span_elements:
-                print(f"\nListing {priority} vulnerabilities:")
-                sleep(2)
+        # Traverse the JSON structure and extract subcategories
+        for category in taxonomy_json['vrtJson']:
+            print(f"Category: {category['name']}")
+            for subcategory in category.get('children', []):
+                print(f"  Subcategory: {subcategory['name']}")
+                for variant in subcategory.get('children', []):
+                    print(f"    Variant: {variant['name']} (Priority: {variant.get('priority', 'N/A')})")
 
-                for span in span_elements:
-                    # Find corresponding vulnerability name in 'td' element
-                    td_element = span.find_parent('tr').find('td', {'data-label': 'Specific vulnerability name'})
-                    if td_element:
-                        print(f"{priority} Vulnerability: {td_element.text.strip()}")
-            else:
-                print(f"No {priority} vulnerabilities found.")
 
 def main():
     get_taxonomy_html()
-    list_vulns_by_priority('taxonomy.html')
+    list_vulns_by_subcategory('taxonomy.html')
 
 if __name__ == '__main__':
     main()
