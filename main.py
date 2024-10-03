@@ -50,8 +50,9 @@ def list_vulns_by_priority(html_file):
             'P2': 'bc-badge--p2',
             'P3': 'bc-badge--p3',
             'P4': 'bc-badge--p4',
-            'P4': 'bc-badge--p5'
+            'P5': 'bc-badge--p5'
         }
+        #added p5 for informational bugs
 
         for priority, badge_class in priorities.items():
             # Find all span elements with the priority badge class
